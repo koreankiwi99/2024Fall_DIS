@@ -18,6 +18,6 @@ if __name__ == '__main__':
   if args.sample:
     documents = documents[:100]
 
-  splitter = SentenceSplitter(args.chunk_size)
+  splitter = SentenceSplitter(chunk_size=args.chunk_size)
   nodes = splitter(documents, show_progress=True)
   save_node(args.save_node_dir, nodes)
