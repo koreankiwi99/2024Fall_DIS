@@ -6,7 +6,7 @@ import os
 def parse_arguments():
   parser = argparse.ArgumentParser()
   parser.add_argument('--corpus_path', type=str, required=True)
-  parser.add_argument('--corpus_path', type=int, default=1024)
+  parser.add_argument('--chunk_size', type=int, default=1024)
   parser.add_argument('--save_node_dir', type=str, required=True)
   parser.add_argument('--sample', type=bool, default=False)
 
