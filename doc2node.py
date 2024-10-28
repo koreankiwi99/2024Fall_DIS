@@ -9,6 +9,7 @@ def parse_arguments():
   parser.add_argument('--chunk_size', type=int, default=1024)
   parser.add_argument('--save_node_dir', type=str, required=True)
   parser.add_argument('--sample', type=bool, default=False)
+  return parser.parse_args()
 
 if __name__ == '__main__':
   args = parse_arguments()
