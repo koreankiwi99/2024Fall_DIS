@@ -22,7 +22,7 @@ class TF_IDF:
   def _count_words(self, docs: List[List[str]]):
     for doc in docs:
       for word in doc:
-        self.word_count[word] = 1
+        self.word_count[word] += 1
 
   #def tf(self, doc, word):
   #  return sum([token == word for token in doc]) / len(doc)
