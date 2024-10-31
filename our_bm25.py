@@ -94,7 +94,7 @@ class OurBM25:
         x = self.word2idf[word] * doc_freqs[word] * (self.k1 + 1)
         y = doc_freqs[word] + self.k1 * (1 - self.b + self.b * len(doc) / self.avg_doc_len)
         score = round((x / y) + 1, round_decimals) #todo
-        score_vecs[self.word_index[word]][doc_idx] = score
+        score_list[self.word_index[word]][doc_idx] = score
 
     self.document_score = score_vecs
 
