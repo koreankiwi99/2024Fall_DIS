@@ -84,8 +84,17 @@ class OurBM25:
   def _transform(self, 
                  docs_splitted : List[List[str]],
                  doc_word_freq : List[Dict[str, int]],
-                 round_decimals):
-    score_list = [[0] * self.corpus_size] * self.d
+                 round_decimals,
+                 save_form :str = 'dict'):
+                   
+    if save_form == 'list':
+      score_vecs = [[0] * self.corpus_size] * self.d
+      
+    elif save_form == 'array':
+      score_vecs = np.zeros([self.d, self.corpus_size], dtype=np.float32)
+
+    elif save_form == 'dict':
+      score_vecs = {word : defaultdict(int) for word in self.word_index.keys()}
       
     for doc_idx, doc in enumerate(tqdm(docs_splitted)):
       doc_freqs = doc_word_freq[doc_idx]
@@ -94,9 +103,16 @@ class OurBM25:
         x = self.word2idf[word] * doc_freqs[word] * (self.k1 + 1)
         y = doc_freqs[word] + self.k1 * (1 - self.b + self.b * len(doc) / self.avg_doc_len)
         score = round((x / y) + 1, round_decimals) #todo
-        score_list[self.word_index[word]][doc_idx] = score
+        if save_form == 'list':
+          score_vecs[self.word_index[word]][doc_idx] = score
 
-    self.document_score = score_list
+        elif save_form == 'array':
+          score_vecs[self.word_index[word], doc_idx] = score
+          
+        elif save_form == 'dict':
+          score_vecs[word][doc_idx] = score
+
+    self.document_score = score_vecs
 
   def search(self, 
              query : Union[List[str], str], 
@@ -108,5 +124,6 @@ class OurBM25:
     top_doc_k = np.argsort(scores)[::-1][:k]
     if return_score == False:
       return self.corpus_id[top_doc_k] if self.corpus_id else top_doc_k
+    
     else:
       return [(scores[idx], idx) for idx in top_doc_k]
