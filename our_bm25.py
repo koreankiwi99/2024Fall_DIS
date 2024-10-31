@@ -46,7 +46,8 @@ class OurBM25:
     
   def fit_transform(self, 
                     corpus : List[str],
-                    top_k :int=None):
+                    top_k :int=None,
+                    round_decimals : 2):
     #local variables for transforming corpus
     self.top_k = top_k
     doc_word_freq = []
@@ -78,11 +79,12 @@ class OurBM25:
     self.word_index = {word: i for i, word in enumerate(self.word2idf.keys())}
     self.d = len(self.word2idf.keys())
     #transform and save numpy array
-    self._transform(docs_splitted, doc_word_freq)
+    self._transform(docs_splitted, doc_word_freq, round_decimals)
     
   def _transform(self, 
                  docs_splitted : List[List[str]],
-                 doc_word_freq : List[Dict[str, int]]):    
+                 doc_word_freq : List[Dict[str, int]],
+                 round_decimals):    
     score_vecs = np.zeros([self.d, self.corpus_size], dtype=np.float32)
     for doc_idx, doc in enumerate(tqdm(docs_splitted)):
       doc_freqs = doc_word_freq[doc_idx]
@@ -91,7 +93,7 @@ class OurBM25:
         x = self.word2idf[word] * doc_freqs[word] * (self.k1 + 1)
         y = doc_freqs[word] + self.k1 * (1 - self.b + self.b * len(doc) / self.avg_doc_len)
         score = (x / y) + 1 #todo
-        score_vecs[self.word_index[word], doc_idx] = score
+        score_vecs[self.word_index[word], doc_idx] = np.round(score, round_decimals)
 
     self.document_score = score_vecs
 
