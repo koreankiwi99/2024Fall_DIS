@@ -138,7 +138,7 @@ class OurBM25:
       top_doc_k = np.argsort(scores)[::-1][:k]
 
     if return_score == False:
-      return [self.corpus_id[idx] for idx in self.corpus_id] if self.corpus_id else top_doc_k
+      return [self.corpus_id[idx] for idx in top_doc_k] if self.corpus_id else top_doc_k
       
     else:
       return [(scores[idx], idx) for idx in top_doc_k]
