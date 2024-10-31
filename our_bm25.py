@@ -5,12 +5,21 @@ from tqdm import tqdm
 from operator import itemgetter
 
 class OurBM25:
-  def __init__(self, k1=1.2, b=0.75, epsilon=0.75):
+  def __init__(self, 
+               k1=1.2,
+               b=0.75, 
+               epsilon=0.75,
+               corpus_id : Optional[List[str]]=None,
+               top_k : Optional[int]=None, 
+               round_decimals : int=2,
+               save_form : str='slow'):
     self.k1 = k1
     self.b = b
     self.epsilon = epsilon
-    self.corpus_id = None
-    self.top_k = None
+    self.corpus_id = corpus_id
+    self.top_k = top_k
+    self.round_decimals = round_decimals
+    self.save_form = save_form
 
     #needs to be saved
     self.document_score = None
@@ -82,17 +91,15 @@ class OurBM25:
     self.d = len(self.word2idf.keys())
     
     #transform and save numpy array
-    self._transform(docs_splitted, doc_word_freq, round_decimals, save_form)
+    self._transform(docs_splitted, doc_word_freq)
     
   def _transform(self, 
                  docs_splitted : List[List[str]],
-                 doc_word_freq : List[Dict[str, int]],
-                 round_decimals : int,
-                 save_form : str):
-    if save_form == 'fast':
+                 doc_word_freq : List[Dict[str, int]]):
+    if self.save_form == 'fast':
       score_vecs = np.zeros([self.d, self.corpus_size], dtype=np.float32)
             
-    elif save_form == 'slow':
+    elif self.save_form == 'slow':
       score_vecs = [defaultdict(int)] * self.corpus_size
 
     for doc_idx, doc in enumerate(tqdm(docs_splitted)):
@@ -101,28 +108,27 @@ class OurBM25:
       for word in doc_freqs.keys(): #use as word set
         x = self.word2idf[word] * doc_freqs[word] * (self.k1 + 1)
         y = doc_freqs[word] + self.k1 * (1 - self.b + self.b * len(doc) / self.avg_doc_len)
-        score = round((x / y) + 1, round_decimals) #todo
+        score = round((x / y) + 1, self.round_decimals) #todo
       
-        if save_form == 'fast':#loading slow, fast retrieval
+        if self.save_form == 'fast':#loading slow, fast retrieval
           score_vecs[self.word_index[word], doc_idx] = score
 
-        elif save_form == 'slow':#loading fast, slow retrieval
+        elif self.save_form == 'slow':#loading fast, slow retrieval
           score_vecs[doc_idx][self.word_index[word]] = score
-
+    
     self.document_score = score_vecs
 
   def search(self, 
              query : Union[List[str], str], 
              k : int=10, 
-             return_score : bool=True,
-             save_form : str='slow'):
+             return_score : bool=True):
     splitted_query = self._split(query) if type(query) == str else query
-    if save_form == 'fast': #loading slow, fast retrieval
+    if self.save_form == 'fast': #loading slow, fast retrieval
       word_indices = [self.word_index[w] for w in splitted_query if w in self.word_index] # num_word * num_docs 
       scores = sum(self.document_score[word_indices, :]) # 1 * num_docs
       top_doc_k = np.argsort(scores)[::-1][:k]
     
-    elif save_form == 'slow':#loading fast, slow retrieval
+    elif self.save_form == 'slow':#loading fast, slow retrieval
       word_indices = [self.word_index[w] for w in splitted_query if w in self.word_index] # num_word * num_docs 
       get_word_scores = lambda doc : sum(itemgetter(*word_indices)(doc))
       scores = np.array([get_word_scores(doc) for doc in self.document_score])
