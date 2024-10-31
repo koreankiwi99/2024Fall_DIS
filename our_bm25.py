@@ -84,13 +84,9 @@ class OurBM25:
   def _transform(self, 
                  docs_splitted : List[List[str]],
                  doc_word_freq : List[Dict[str, int]],
-                 round_decimals,
-                 save_int:bool=True):
-    if save_int:
-      score_vecs = np.zeros([self.d, self.corpus_size], dtype=np.int8)
-    else:
-      score_vecs = np.zeros([self.d, self.corpus_size], dtype=np.float32)               
-    
+                 round_decimals):
+    score_list = [[0] * self.corpus_size] * self.d
+      
     for doc_idx, doc in enumerate(tqdm(docs_splitted)):
       doc_freqs = doc_word_freq[doc_idx]
 
@@ -98,7 +94,7 @@ class OurBM25:
         x = self.word2idf[word] * doc_freqs[word] * (self.k1 + 1)
         y = doc_freqs[word] + self.k1 * (1 - self.b + self.b * len(doc) / self.avg_doc_len)
         score = round((x / y) + 1, round_decimals) #todo
-        score_vecs[self.word_index[word], doc_idx] = score * (10**round_decimals) if save_int else score
+        score_vecs[self.word_index[word]][doc_idx] = score
 
     self.document_score = score_vecs
 
