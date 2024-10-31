@@ -46,8 +46,8 @@ class OurBM25:
     
   def fit_transform(self, 
                     corpus : List[str],
-                    top_k :int=None,
-                    round_decimals : 2):
+                    top_k : int=None,
+                    round_decimals : int=2):
     #local variables for transforming corpus
     self.top_k = top_k
     doc_word_freq = []
