@@ -96,7 +96,7 @@ class OurBM25:
         score = round((x / y) + 1, round_decimals) #todo
         score_list[self.word_index[word]][doc_idx] = score
 
-    self.document_score = score_vecs
+    self.document_score = score_list
 
   def search(self, 
              query : Union[List[str], str], 
