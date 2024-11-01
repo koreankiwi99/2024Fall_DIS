@@ -96,7 +96,7 @@ class OurBM25:
       score_vecs = np.zeros([self.d, self.corpus_size], dtype=np.float32)
 
     elif self.save_form == 'economic':
-      score_vecs = np.zeros([self.d, self.corpus_size], dtype=np.int16)
+      score_vecs = [[0 for _ in range(self.d)] for _ in range(self.corpus_size)]
 
     elif self.save_form == 'slow':
       score_vecs = [defaultdict(int) for _ in range(self.corpus_size)]
@@ -112,8 +112,8 @@ class OurBM25:
         if self.save_form == 'fast':#loading slow, fast retrieval
           score_vecs[self.word_index[word], doc_idx] = score
 
-        elif self.save_form == 'economic':#fitting slow, loading slow, fast retrieval
-          score_vecs[self.word_index[word], doc_idx] = score * (10** self.round_decimals)
+        elif self.save_form == 'economic':
+          score_vecs[self.word_index[word][self.word_index[word]] = score
 
         elif self.save_form == 'slow':#loading fast, slow retrieval
           score_vecs[doc_idx][self.word_index[word]] = score
@@ -128,7 +128,7 @@ class OurBM25:
     word_indices = [self.word_index[w] for w in splitted_query if w in self.word_index] # num_word * num_docs
     if len(word_indices) == 0:#not a single word in the query matching for word_set
       return []
-
+               
     if self.save_form in ['fast', 'economic']: #loading slow, fast retrieval
       scores = sum(self.document_score[word_indices, :]) # 1 * num_docs
       top_doc_k = np.argsort(scores)[::-1][:k]
