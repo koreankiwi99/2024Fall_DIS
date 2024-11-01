@@ -113,7 +113,7 @@ class OurBM25:
           score_vecs[self.word_index[word], doc_idx] = score
 
         elif self.save_form == 'economic':
-          score_vecs[self.word_index[word][self.word_index[word]] = score
+          score_vecs[doc_idx][self.word_index[word]] = score
 
         elif self.save_form == 'slow':#loading fast, slow retrieval
           score_vecs[doc_idx][self.word_index[word]] = score
