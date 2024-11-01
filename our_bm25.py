@@ -132,7 +132,7 @@ class OurBM25:
     if self.save_form == 'fast': #loading slow, fast retrieval
       scores = sum(self.document_score[word_indices, :]) # 1 * num_docs
 
-    elif self.save_form in ['slow', 'economic']:#loading fast, slow retrieval
+    elif self.save_form == 'slow':#loading fast, slow retrieval
       if len(word_indices) == 1:
         get_word_scores = lambda doc : doc[word_indices[0]]
 
@@ -140,6 +140,9 @@ class OurBM25:
         get_word_scores = lambda doc : sum(list(itemgetter(*word_indices)(doc)))
 
       scores = np.array([get_word_scores(doc) for doc in self.document_score])
+
+    elif self.save_form == 'economic':
+      scores = np.array([sum([doc.get(idx, 0) for idx in word_indices]) for doc in self.document_score])
     
     top_doc_k = np.argsort(scores)[::-1][:k]
     if return_score == False:
