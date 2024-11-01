@@ -96,7 +96,7 @@ class OurBM25:
       score_vecs = np.zeros([self.d, self.corpus_size], dtype=np.float32)
 
     elif self.save_form == 'economic':
-      score_vecs = [np.zeros([self.d], dtype=np.float32) for _ in range(self.corpus_size)]
+      score_vecs = [[0 for _ in range(self.d)] for _ in range(self.corpus_size)]
 
     elif self.save_form == 'slow':
       score_vecs = [defaultdict(int) for _ in range(self.corpus_size)]
@@ -132,10 +132,7 @@ class OurBM25:
     if self.save_form == 'fast': #loading slow, fast retrieval
       scores = sum(self.document_score[word_indices, :]) # 1 * num_docs
 
-    elif self.save_form == 'economic':
-      scores = np.array([sum(doc[word_indices]) for doc in self.document_score])
-
-    elif self.save_form == 'slow':#loading fast, slow retrieval
+    elif self.save_form in ['slow', 'economic']:#loading fast, slow retrieval
       if len(word_indices) == 1:
         get_word_scores = lambda doc : doc[word_indices[0]]
 
