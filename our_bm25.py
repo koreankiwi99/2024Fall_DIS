@@ -96,7 +96,7 @@ class OurBM25:
       score_vecs = np.zeros([self.d, self.corpus_size], dtype=np.float32)
 
     elif self.save_form == 'economic':
-      score_vecs = [[0 for _ in range(self.d)] for _ in range(self.corpus_size)]
+      score_vecs = [np.zeros([self.d], dtype=np.float32) for _ in range(self.corpus_size)]
 
     elif self.save_form == 'slow':
       score_vecs = [defaultdict(int) for _ in range(self.corpus_size)]
@@ -129,9 +129,11 @@ class OurBM25:
     if len(word_indices) == 0:#not a single word in the query matching for word_set
       return []
                
-    if self.save_form in ['fast', 'economic']: #loading slow, fast retrieval
+    if self.save_form == 'fast': #loading slow, fast retrieval
       scores = sum(self.document_score[word_indices, :]) # 1 * num_docs
-      top_doc_k = np.argsort(scores)[::-1][:k]
+
+    elif self.save_form == 'economic':
+      scores = np.array([sum(doc[word_indices]) for doc in self.document_score])
 
     elif self.save_form == 'slow':#loading fast, slow retrieval
       if len(word_indices) == 1:
@@ -141,8 +143,8 @@ class OurBM25:
         get_word_scores = lambda doc : sum(list(itemgetter(*word_indices)(doc)))
 
       scores = np.array([get_word_scores(doc) for doc in self.document_score])
-      top_doc_k = np.argsort(scores)[::-1][:k]
-
+    
+    top_doc_k = np.argsort(scores)[::-1][:k]
     if return_score == False:
       return [self.corpus_id[idx] for idx in top_doc_k] if self.corpus_id else top_doc_k
       
