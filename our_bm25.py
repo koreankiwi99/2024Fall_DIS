@@ -96,7 +96,7 @@ class OurBM25:
       score_vecs = np.zeros([self.d, self.corpus_size], dtype=np.float32)
 
     elif self.save_form == 'economic':
-      score_vecs = np.zeros([self.d, self.corpus_size], dtype=np.int8)
+      score_vecs = np.zeros([self.d, self.corpus_size], dtype=np.int16)
 
     elif self.save_form == 'slow':
       score_vecs = [defaultdict(int) for _ in range(self.corpus_size)]
