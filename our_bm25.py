@@ -113,7 +113,7 @@ class OurBM25:
           score_vecs[self.word_index[word], doc_idx] = score
 
         elif self.save_form == 'economic':#fitting slow, loading slow, fast retrieval
-          score_vecs[self.word_index[word]][doc_idx] = score * (10** self.round_decimals)
+          score_vecs[self.word_index[word], doc_idx] = score * (10** self.round_decimals)
 
         elif self.save_form == 'slow':#loading fast, slow retrieval
           score_vecs[doc_idx][self.word_index[word]] = score
