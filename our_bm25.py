@@ -149,4 +149,4 @@ class OurBM25:
       return [self.corpus_id[idx] for idx in top_doc_k] if self.corpus_id else top_doc_k
       
     else:
-      return [(scores[idx], self.corpus_id[idx]) for idx in top_doc_k] if self.coprus_id else [(scores[idx], idx) for idx in top_doc_k]
+      return [(scores[idx], self.corpus_id[idx]) for idx in top_doc_k] if self.corpus_id else [(scores[idx], idx) for idx in top_doc_k]
