@@ -47,3 +47,44 @@ class ReRanker:
     else:
       top_k_doc = np.argsort(similarity_scores)[::-1][:k]
       return [doc_ids[idx] for idx in top_k_doc]
+
+
+class HybridSearch:
+  def __init__(self, 
+               bm_scores: List[np.array], 
+               rerank_scores : List[np.array], 
+               doc_ids : List[List[str]]):
+    """
+    Hybrid search using BM25 and Reranker scores
+    """
+    self.bm_scores = bm_scores
+    self.rerank_scores = rerank_scores
+    self.doc_ids = doc_ids
+    self.output = self._build()
+
+  def normalize(self, scores : np.array):
+    """
+    Normalize scores to [0,1]
+    """
+    min_score = np.min(scores)
+    max_score = np.max(scores)
+    return (scores - min_score) / (max_score - min_score)
+
+  def hybrid_search(self, 
+                    bm : np.array, 
+                    rerank : np.array, 
+                    doc_ids : List[str]):
+    """
+    Hybrid search using BM25 and Reranker scores
+    """
+    score = self.normalize(bm) + self.normalize(rerank)
+    top_doc = np.argsort(score)[::-1][:10]
+    return [doc_ids[idx] for idx in top_doc]
+
+  def _build(self):
+    """
+    Build output
+    """
+    return [self.hybrid_search(b, r, i) for b,r,i in zip(self.bm_scores,
+                                                         self.rerank_scores,
+                                                         self.doc_ids)]
