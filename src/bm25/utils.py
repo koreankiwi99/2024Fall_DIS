@@ -5,7 +5,7 @@ from ast import literal_eval
 from typing import List
 import gzip
 
-from our_bm25 import OurBM25
+from src.bm25.our_bm25 import OurBM25
 
 def settings(config_path : str,
              embedding_path : str):
